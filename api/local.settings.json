@@ -1,0 +1,11 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "STORAGE_ACCOUNT": "Coffe001storage",
+    "STORAGE_KEY": "lvuQNSwKV7zt7xw0Fz92C1j7E+il7Hy2DTBDmOgkxPlt+PriC0PkfgpAEF80u6e1f63gNGEHBHTP+AStmoEk0A==",
+    "STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=https;AccountName=coffe001storage;AccountKey=lvuQNSwKV7zt7xw0Fz92C1j7E+il7Hy2DTBDmOgkxPlt+PriC0PkfgpAEF80u6e1f63gNGEHBHTP+AStmoEk0A==",
+    "MAP_KEY": "DZ6oZmtIiXvafRQiBr0NjJXMy_wB0x7rHaxVta92idM",
+    "AI_API_KEY": "09920fadc81a4293a8f311c1b07b4ab9"
+  }
+}
