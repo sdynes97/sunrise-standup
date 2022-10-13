@@ -3,11 +3,11 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "unique-prefix": {
-            "type": "string",
-            "defaultValue": "coffe001"
+            "defaultValue": "coffe001",
+            "type": "String"
         },
         "videoindexerkey": {
-            "type": "string"
+            "type": "String"
         }
     },
     "variables": {
@@ -20,17 +20,30 @@
     },
     "resources": [
         {
-            "name": "[variables('storageAccountName')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
+            "name": "[variables('storageAccountName')]",
             "location": "[variables('location')]",
-            "kind": "BlobStorage",
             "sku": {
                 "name": "Standard_LRS",
                 "tier": "Premium"
             },
+            "kind": "BlobStorage",
             "properties": {
-                "accessTier": "Cool"
+                "defaultToOAuthAuthentication": false,
+                "publicNetworkAccess": "Disabled",
+                "allowCrossTenantReplication": true,
+                "minimumTlsVersion": "TLS1_2",
+                "allowBlobPublicAccess": false,
+                "allowSharedKeyAccess": true,
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Deny"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "accessTier": "Hot"
             }
         },
         {
@@ -66,7 +79,7 @@
                         },
                         {
                             "allowedOrigins": [
-                                "https://happy-desert-09172a910.1.azurestaticapps.net"
+                                "https://*.azurestaticapps.net"
                             ],
                             "allowedMethods": [
                                 "GET",
@@ -112,8 +125,8 @@
         {
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
-            "location": "[variables('location')]",
             "name": "azureblob",
+            "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
             ],
@@ -130,10 +143,9 @@
         },
         {
             "type": "Microsoft.Web/connections",
-            "name": "videoindexer-v2",
             "apiVersion": "2016-06-01",
+            "name": "videoindexer-v2",
             "location": "[variables('location')]",
-            "scale": null,
             "properties": {
                 "displayName": "videoindexer-v2",
                 "parameterValues": {
@@ -145,12 +157,11 @@
             }
         },
         {
-            "name": "[variables('mapsName')]",
             "type": "Microsoft.Maps/accounts",
             "apiVersion": "2018-05-01",
+            "name": "[variables('mapsName')]",
             "location": "global",
-            "tags": {
-            },
+            "tags": {},
             "sku": {
                 "name": "S0"
             }
@@ -164,8 +175,7 @@
                 "name": "S0"
             },
             "kind": "SpeechServices",
-            "properties": {
-            }
+            "properties": {}
         },
         {
             "type": "Microsoft.Media/mediaservices",
@@ -186,6 +196,10 @@
             "apiVersion": "2019-05-01",
             "name": "[variables('logicAppName')]",
             "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections','azureblob')]",
+                "[resourceId('Microsoft.Web/connections','videoindexer-v2')]"
+            ],
             "properties": {
                 "state": "Enabled",
                 "definition": {
@@ -193,8 +207,7 @@
                     "contentVersion": "1.0.0.0",
                     "parameters": {
                         "$connections": {
-                            "defaultValue": {
-                            },
+                            "defaultValue": {},
                             "type": "Object"
                         }
                     },
@@ -297,8 +310,7 @@
                             }
                         },
                         "Get_blob_content": {
-                            "runAfter": {
-                            },
+                            "runAfter": {},
                             "type": "ApiConnection",
                             "inputs": {
                                 "host": {
@@ -380,23 +392,19 @@
                                                     "type": "integer"
                                                 },
                                                 "speakerLongestMonolog": {
-                                                    "properties": {
-                                                    },
+                                                    "properties": {},
                                                     "type": "object"
                                                 },
                                                 "speakerNumberOfFragments": {
-                                                    "properties": {
-                                                    },
+                                                    "properties": {},
                                                     "type": "object"
                                                 },
                                                 "speakerTalkToListenRatio": {
-                                                    "properties": {
-                                                    },
+                                                    "properties": {},
                                                     "type": "object"
                                                 },
                                                 "speakerWordCount": {
-                                                    "properties": {
-                                                    },
+                                                    "properties": {},
                                                     "type": "object"
                                                 }
                                             },
@@ -419,8 +427,7 @@
                         "Until": {
                             "actions": {
                                 "Get_Video_Index": {
-                                    "runAfter": {
-                                    },
+                                    "runAfter": {},
                                     "type": "ApiConnection",
                                     "inputs": {
                                         "host": {
@@ -482,8 +489,7 @@
                             }
                         }
                     },
-                    "outputs": {
-                    }
+                    "outputs": {}
                 },
                 "parameters": {
                     "$connections": {
@@ -501,37 +507,32 @@
                         }
                     }
                 }
-
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/connections','azureblob')]",
-                "[resourceId('Microsoft.Web/connections','videoindexer-v2')]"
-            ]
+            }
         }
     ],
     "outputs": {
         "storage_account": {
-            "type": "string",
+            "type": "String",
             "value": "[variables('storageAccountName')]"
         },
         "storage_key": {
-            "type": "string",
+            "type": "String",
             "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
         },
         "storage_connection_string": {
-            "type": "string",
+            "type": "String",
             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value)]"
         },
         "ai_api_endpoint": {
-            "type": "string",
+            "type": "String",
             "value": "[reference(variables('cognitiveName'), '2017-04-18').endpoint]"
         },
         "ai_api_key": {
-            "type": "string",
+            "type": "String",
             "value": "[listKeys(variables('cognitiveName'), '2017-04-18').key1]"
         },
         "map_key": {
-            "type": "string",
+            "type": "String",
             "value": "[listKeys(resourceId('Microsoft.Maps/accounts', variables('mapsName')), providers('Microsoft.Maps', 'accounts').apiVersions[0]).primaryKey]"
         }
     }
