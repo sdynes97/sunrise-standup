@@ -63,6 +63,31 @@
                             "allowedHeaders": [
                                 ""
                             ]
+                        },
+                        {
+                            "allowedOrigins": [
+                                "https://happy-desert-09172a910.1.azurestaticapps.net"
+                            ],
+                            "allowedMethods": [
+                                "GET",
+                                "OPTIONS",
+                                "PUT"
+                            ],
+                            "maxAgeInSeconds": 0,
+                            "exposedHeaders": [
+                                ""
+                            ],
+                            "allowedHeaders": [
+                                "content-type",
+                                "x-ms-blob-content-type",
+                                "x-ms-blob-type",
+                                "x-ms-client-request-id",
+                                "x-ms-meta-avatar",
+                                "x-ms-meta-caption",
+                                "x-ms-meta-latitude",
+                                "x-ms-meta-longitude",
+                                "x-ms-version"
+                            ]
                         }
                     ]
                 }
