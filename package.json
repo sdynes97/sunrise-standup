@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "proxy": "http://localhost:7071",
+  "homepage": ".",
   "dependencies": {
     "@azure/storage-blob": "^12.1.1",
     "@testing-library/jest-dom": "^4.2.4",
